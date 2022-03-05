@@ -1,16 +1,17 @@
 ﻿using ParkyAPI.Data;
 using ParkyAPI.Models;
+using ParkyAPI.Models.DTOs;
 using ParkyAPI.Repository.IRepository;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ParkyAPI.Repository
 {
-    public class NationalParkRepository : INationalParkRepository
+    public class NationalParkRepository: Repository<NationalPark>, INationalParkRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public NationalParkRepository(ApplicationDbContext db)
+        public NationalParkRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }

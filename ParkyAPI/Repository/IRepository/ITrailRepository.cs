@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ParkyAPI.Repository.IRepository
 {
-    public interface ITrailRepository
+    public interface ITrailRepository : IRepository<Trail>
     {
         ICollection<Trail> GetTrails();
         ICollection<Trail> GetTrailsInNationalPark(int nationalParkId);

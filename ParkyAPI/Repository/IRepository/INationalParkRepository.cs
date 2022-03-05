@@ -1,9 +1,10 @@
 ﻿using ParkyAPI.Models;
+using ParkyAPI.Models.DTOs;
 using System.Collections.Generic;
 
 namespace ParkyAPI.Repository.IRepository
 {
-    public interface INationalParkRepository 
+    public interface INationalParkRepository : IRepository<NationalPark>
     {
         ICollection<NationalPark> GetNationalParks();
         NationalPark GetNationalPark(int nationalParkId);

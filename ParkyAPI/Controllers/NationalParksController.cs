@@ -13,12 +13,18 @@ namespace ParkyAPI.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class NationalParksController : ControllerBase
     {
-        private readonly INationalParkRepository _nationalRepo;
+        //private readonly INationalParkRepository _nationalRepo;
         public readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public NationalParksController(INationalParkRepository nationalRepo, IMapper mapper)
+        //public NationalParksController(INationalParkRepository nationalRepo, IMapper mapper)
+        //{
+        //    _nationalRepo = nationalRepo;
+        //    _mapper = mapper;
+        //}
+        public NationalParksController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _nationalRepo = nationalRepo;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
         /// <summary>
@@ -30,9 +36,24 @@ namespace ParkyAPI.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesDefaultResponseType]
+        //public IActionResult GetNationalParks()
+        //{
+        //    var nationParkList = _nationalRepo.GetNationalParks();
+
+        //    var nationParkDTO = new List<NationalParkDTO>();
+
+        //    foreach (var nationPark in nationParkList)
+        //    {
+        //        nationParkDTO.Add(_mapper.Map<NationalParkDTO>(nationPark));
+
+        //    }
+
+        //    return Ok(nationParkDTO);
+        //}
+
         public IActionResult GetNationalParks()
         {
-            var nationParkList = _nationalRepo.GetNationalParks();
+            var nationParkList = _unitOfWork.NationalPark.GetNationalParks();
 
             var nationParkDTO = new List<NationalParkDTO>();
 
@@ -56,7 +77,7 @@ namespace ParkyAPI.Controllers
         [ProducesDefaultResponseType]
         public IActionResult GetNationalPark(int nationalParkId)
         {
-            var nationalParkObj = _nationalRepo.GetNationalPark(nationalParkId);
+            var nationalParkObj = _unitOfWork.NationalPark.GetNationalPark(nationalParkId);
             if (nationalParkObj == null)
             {
                 return NotFound();
@@ -87,7 +108,7 @@ namespace ParkyAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (_nationalRepo.NationalParkExists(natParkDTO.Name))
+            if (_unitOfWork.NationalPark.NationalParkExists(natParkDTO.Name))
             {
                 ModelState.AddModelError("", "Nation Park already exists!");
                 return StatusCode(404, ModelState);
@@ -98,7 +119,7 @@ namespace ParkyAPI.Controllers
 
             var nationalParkObj = _mapper.Map<NationalPark>(natParkDTO);
 
-            if (!_nationalRepo.CreateNationalPark(nationalParkObj))
+            if (!_unitOfWork.NationalPark.CreateNationalPark(nationalParkObj))
             {
                 ModelState.AddModelError("", $"Something went wrong when trying to saving the record {nationalParkObj.Name}");
                 return StatusCode(500, ModelState);
@@ -122,7 +143,7 @@ namespace ParkyAPI.Controllers
             //    return StatusCode(404, ModelState);
             //}
             var nationalParkObj = _mapper.Map<NationalPark>(natParkDTO);
-            if (!_nationalRepo.UpdateNationalPark(nationalParkObj))
+            if (!_unitOfWork.NationalPark.UpdateNationalPark(nationalParkObj))
             {
                 ModelState.AddModelError("", $"Something went wrong when trying to updating the record {nationalParkObj.Name}");
                 return StatusCode(500, ModelState);
@@ -137,12 +158,12 @@ namespace ParkyAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteNationalPark(int nationalParkId)
         {
-            if (!_nationalRepo.NationalParkExists(nationalParkId))
+            if (!_unitOfWork.NationalPark.NationalParkExists(nationalParkId))
             {
                 return NotFound();
             }
-            var nationalParkObj = _nationalRepo.GetNationalPark(nationalParkId);
-            if (!_nationalRepo.DeleteNationalPark(nationalParkObj))
+            var nationalParkObj = _unitOfWork.NationalPark.GetNationalPark(nationalParkId);
+            if (!_unitOfWork.NationalPark.DeleteNationalPark(nationalParkObj))
             {
                 ModelState.AddModelError("", $"Something went wrong when trying to delete the record {nationalParkObj.Name}");
                 return StatusCode(500, ModelState);
