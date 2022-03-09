@@ -13,23 +13,29 @@ namespace ParkyAPI.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class TrailsController : ControllerBase
     {
-        private readonly INationalParkRepository _nationalRepo;
+        //private readonly INationalParkRepository _nationalRepo;
         public readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public TrailsController(INationalParkRepository nationalRepo, IMapper mapper)
+        //public NationalParksController(INationalParkRepository nationalRepo, IMapper mapper)
+        //{
+        //    _nationalRepo = nationalRepo;
+        //    _mapper = mapper;
+        //}
+        public TrailsController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _nationalRepo = nationalRepo;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
         /// <summary>
-        ///// Get list of national parks.
-        ///// </summary>
-        ///// <returns></returns>
+        /// Get list of trails.
+        /// </summary>
+        /// <returns></returns>
 
-        //[HttpGet]
-        //[ProducesResponseType(200)]
-        //[ProducesResponseType(404)]
-        //[ProducesDefaultResponseType]
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesDefaultResponseType]
         //public IActionResult GetNationalParks()
         //{
         //    var nationParkList = _nationalRepo.GetNationalParks();
@@ -45,109 +51,119 @@ namespace ParkyAPI.Controllers
         //    return Ok(nationParkDTO);
         //}
 
-        ///// <summary>
-        ///// Get individual national park
-        ///// </summary>
-        ///// <param name="nationalParkId">The Id of national park</param>
-        ///// <returns></returns>
-        //[HttpGet("{nationalParkId:int}", Name = "GetNationalPark")]
-        //[ProducesResponseType(200, Type = typeof(NationalParkDTO))]
-        //[ProducesResponseType(404)]
-        //[ProducesDefaultResponseType]
-        //public IActionResult GetNationalPark(int nationalParkId)
-        //{
-        //    var nationalParkObj = _nationalRepo.GetNationalPark(nationalParkId);
-        //    if (nationalParkObj == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var nationalParkDTO = _mapper.Map<NationalParkDTO>(nationalParkObj);
+        public IActionResult GetTrails()
+        {
+            var trailList = _unitOfWork.Trail.GetTrails();
 
-        //    //if we do not use the automapper _mapper, we must to convert NationalPark into nationalParkDTO like this
-        //    //var nationalParkDTO = new NationalPark() 
-        //    //{
-        //    //    Created = nationalParkObj.Created,
-        //    //    Established = nationalParkObj.Established,
-        //    //    Id = nationalParkObj.Id,
-        //    //    Name = nationalParkObj.Name,
-        //    //    State = nationalParkObj.State,
-        //    //};
+            var trailDTO = new List<TrailDTO>();
 
-        //    return Ok(nationalParkDTO);
-        //}
+            foreach (var trail in trailList)
+            {
+                trailDTO.Add(_mapper.Map<TrailDTO>(trail));
 
-        //[HttpPost]
-        //[ProducesResponseType(201, Type =typeof(List<NationalParkDTO>))]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public IActionResult CreateNationalPark([FromBody] NationalParkDTO natParkDTO)
-        //{
-        //    if (natParkDTO == null)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    if (_nationalRepo.NationalParkExists(natParkDTO.Name))
-        //    {
-        //        ModelState.AddModelError("", "Nation Park already exists!");
-        //        return StatusCode(404, ModelState);
-        //    }
-        //    //if (!ModelState.IsValid) {
-        //    //    return BadRequest(ModelState);
-        //    //}
+            }
 
-        //    var nationalParkObj = _mapper.Map<NationalPark>(natParkDTO);
+            return Ok(trailDTO);
+        }
 
-        //    if (!_nationalRepo.CreateNationalPark(nationalParkObj))
-        //    {
-        //        ModelState.AddModelError("", $"Something went wrong when trying to saving the record {nationalParkObj.Name}");
-        //        return StatusCode(500, ModelState);
-        //    }
-        //    return CreatedAtRoute("GetNationalPark", new { nationalParkId = nationalParkObj.Id }, nationalParkObj);
-        //} 
+        /// <summary>
+        /// Get individual trial
+        /// </summary>
+        /// <param name="trailId">The Id of trail </param>
+        /// <returns></returns>
+        [HttpGet("{trailId:int}", Name = "GetTrail")]
+        [ProducesResponseType(200, Type = typeof(TrailDTO))]
+        [ProducesResponseType(404)]
+        [ProducesDefaultResponseType]
+        public IActionResult GetTrail(int trailId)
+        {
+            var trailObj = _unitOfWork.Trail.GetTrail(trailId);
+            if (trailObj == null)
+            {
+                return NotFound();
+            }
+            var trailDTO = _mapper.Map<TrailDTO>(trailObj);
 
-        //[HttpPatch("{nationalParkId:int}", Name ="GetNationalPark")]
-        //[ProducesResponseType(204)]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public IActionResult UpdateNationalPark(int nationalParkId, [FromBody] NationalParkDTO natParkDTO)
-        //{
-        //    if (natParkDTO == null || nationalParkId!= natParkDTO.Id)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    //if (_nationalRepo.NationalParkExists(natParkDTO.Name))
-        //    //{
-        //    //    ModelState.AddModelError("", "Nation Park already exists!");
-        //    //    return StatusCode(404, ModelState);
-        //    //}
-        //    var nationalParkObj = _mapper.Map<NationalPark>(natParkDTO);
-        //    if (!_nationalRepo.UpdateNationalPark(nationalParkObj))
-        //    {
-        //        ModelState.AddModelError("", $"Something went wrong when trying to updating the record {nationalParkObj.Name}");
-        //        return StatusCode(500, ModelState);
-        //    }
-        //    return NoContent();
-        //}
+            //if we do not use the automapper _mapper, we must to convert NationalPark into nationalParkDTO like this
+            //var nationalParkDTO = new NationalPark() 
+            //{
+            //    Created = nationalParkObj.Created,
+            //    Established = nationalParkObj.Established,
+            //    Id = nationalParkObj.Id,
+            //    Name = nationalParkObj.Name,
+            //    State = nationalParkObj.State,
+            //};
 
-        //[HttpDelete("{nationalParkId:int}", Name ="DeleteNationalPark")]
-        //[ProducesResponseType(StatusCodes.Status204NoContent)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status409Conflict)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public IActionResult DeleteNationalPark(int nationalParkId)
-        //{
-        //    if (!_nationalRepo.NationalParkExists(nationalParkId))
-        //    {
-        //        return NotFound();
-        //    }
-        //    var nationalParkObj = _nationalRepo.GetNationalPark(nationalParkId);
-        //    if (!_nationalRepo.DeleteNationalPark(nationalParkObj))
-        //    {
-        //        ModelState.AddModelError("", $"Something went wrong when trying to delete the record {nationalParkObj.Name}");
-        //        return StatusCode(500, ModelState);
-        //    }
-        //    return NoContent();
-        //}
+            return Ok(trailDTO);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(201, Type =typeof(List<TrailDTO>))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult CreateTrail([FromBody] TrailCreateDTO trailCreateDTO)
+        {
+            if (trailCreateDTO == null)
+            {
+                return BadRequest(ModelState);
+            }
+            if (_unitOfWork.Trail.TrailExists(trailCreateDTO.Name))
+            {
+                ModelState.AddModelError("", "Trail already exists!");
+                return StatusCode(404, ModelState);
+            }
+            //if (!ModelState.IsValid) {
+            //    return BadRequest(ModelState);
+            //}
+
+            var trailObj = _mapper.Map<Trail>(trailCreateDTO);
+
+            if (!_unitOfWork.Trail.CreateTrail(trailObj))
+            {
+                ModelState.AddModelError("", $"Something went wrong when trying to saving the record {trailObj.Name}");
+                return StatusCode(500, ModelState);
+            }
+            return CreatedAtRoute("GetTrail", new { trailId = trailObj.Id }, trailObj);
+        } 
+
+        [HttpPatch("{trailId:int}", Name ="Get")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult UpdateTrail(int trailId, [FromBody] TrailUpdateDTO trailUpdateDTO)
+        {
+            if (trailUpdateDTO == null || trailId!= trailUpdateDTO.Id)
+            {
+                return BadRequest(ModelState);
+            }
+            var trailObj = _mapper.Map<Trail>(trailUpdateDTO);
+            if (!_unitOfWork.Trail.UpdateTrail(trailObj))
+            {
+                ModelState.AddModelError("", $"Something went wrong when trying to updating the record {trailObj.Name}");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("{trailId:int}", Name ="DeleteTrail")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult DeleteTrail(int trailId)
+        {
+            if (!_unitOfWork.Trail.TrailExists(trailId))
+            {
+                return NotFound();
+            }
+            var trailObj = _unitOfWork.Trail.GetTrail(trailId);
+            if (!_unitOfWork.Trail.DeleteTrail(trailObj))
+            {
+                ModelState.AddModelError("", $"Something went wrong when trying to delete the record {trailObj.Name}");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
     }
 }
