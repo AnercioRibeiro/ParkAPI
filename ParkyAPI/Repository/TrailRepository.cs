@@ -59,7 +59,7 @@ namespace ParkyAPI.Repository
             return Save();
         }
 
-        public ICollection<Trail> GetTrailsInNationalPark(int nationalParkId)
+        public ICollection<Trail> GetTrailInNationalPark(int nationalParkId)
         {
             return _db.Trails.Include(p=>p.NationalPark).Where(p=>p.NationalParkId == nationalParkId).ToList();
         }

@@ -8,6 +8,7 @@ namespace ParkyAPI.Models.DTOs
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
+        public byte[] Picture { get; set; }
         [Required]
         public string State { get; set; }
         public DateTime Created { get; set; }

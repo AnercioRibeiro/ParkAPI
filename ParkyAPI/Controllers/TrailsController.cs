@@ -8,8 +8,9 @@ using System.Collections.Generic;
 
 namespace ParkyAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/trails")]
     [ApiController]
+    //[ApiExplorerSettings(GroupName = "ParkyOpenAPISpecTrails")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class TrailsController : ControllerBase
     {
@@ -95,6 +96,28 @@ namespace ParkyAPI.Controllers
             //};
 
             return Ok(trailDTO);
+        }
+
+        [HttpGet("[action]/{nationalParkId:int}")]
+        [ProducesResponseType(200, Type = typeof(TrailDTO))]
+        [ProducesResponseType(404)]
+        [ProducesDefaultResponseType]
+        public IActionResult GetTrailInNationalPark(int nationalParkId)
+        {
+            var trailObjList = _unitOfWork.Trail.GetTrailInNationalPark(nationalParkId);
+            if (trailObjList == null)
+            {
+                return NotFound();
+            }
+            var objDto = new List<TrailDTO>();
+            foreach (var obj in trailObjList)
+            {
+                
+                objDto.Add(_mapper.Map<TrailDTO>(obj));
+            }
+            
+
+            return Ok(objDto);
         }
 
         [HttpPost]

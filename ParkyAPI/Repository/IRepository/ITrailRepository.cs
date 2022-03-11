@@ -6,7 +6,7 @@ namespace ParkyAPI.Repository.IRepository
     public interface ITrailRepository : IRepository<Trail>
     {
         ICollection<Trail> GetTrails();
-        ICollection<Trail> GetTrailsInNationalPark(int nationalParkId);
+        ICollection<Trail> GetTrailInNationalPark(int nationalParkId);
         Trail GetTrail(int trailId);
         bool TrailExists(string name);
         bool TrailExists(int id);
