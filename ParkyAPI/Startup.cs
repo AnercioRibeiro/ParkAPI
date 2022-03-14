@@ -39,7 +39,8 @@ namespace ParkyAPI
         {
             services.AddDbContext<ApplicationDbContext>
                 (options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            //services.AddScoped<INationalParkRepository, NationalParkRepository>();
+            services.AddScoped<INationalParkRepository, NationalParkRepository>();
+            services.AddScoped<ITrailRepository, TrailRepository>();
             services.AddApiVersioning(options =>
             {
                 options.AssumeDefaultVersionWhenUnspecified = true;
@@ -52,7 +53,7 @@ namespace ParkyAPI
             services.AddSwaggerGen();
             services.AddAutoMapper(typeof(ParkyMappings));
             //services.AddAutoMapper(typeof(TrailMappings));
-            services.AddScoped<IUnitOfWork, UnitOfWork>();                            
+            //services.AddScoped<IUnitOfWork, UnitOfWork>();                            
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("ParkyOpenAPISpec", new OpenApiInfo 
@@ -112,16 +113,11 @@ namespace ParkyAPI
                         options.SwaggerEndpoint($"/swagger/{desc.GroupName}/swagger.json", desc.GroupName.ToUpperInvariant());
                         //options.RoutePrefix = "";
                     }
-
                 });
             }
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace ParkyAPI.Repository
 {
-    public class NationalParkRepository: Repository<NationalPark>, INationalParkRepository
+    public class NationalParkRepository: INationalParkRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public NationalParkRepository(ApplicationDbContext db) : base(db)
+        public NationalParkRepository(ApplicationDbContext db)
         {
             _db = db;
         }

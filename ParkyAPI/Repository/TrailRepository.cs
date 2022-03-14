@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace ParkyAPI.Repository
 {
-    public class TrailRepository : Repository<Trail>, ITrailRepository
+    public class TrailRepository : ITrailRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public TrailRepository(ApplicationDbContext db) : base(db)
+        public TrailRepository(ApplicationDbContext db) 
         {
             _db = db;
         }
