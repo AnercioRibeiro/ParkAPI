@@ -16,11 +16,12 @@ namespace ParkyAPI.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class NationalParksV2Controller : ControllerBase
     {
-        public readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
-        public NationalParksV2Controller(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IMapper _mapper;
+        //private readonly IUnitOfWork _unitOfWork;
+        public readonly INationalParkRepository _nationRepo;
+        public NationalParksV2Controller(INationalParkRepository nationRepo, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _nationRepo = nationRepo;
             _mapper = mapper;
         }
         /// <summary>
@@ -34,7 +35,7 @@ namespace ParkyAPI.Controllers
         [ProducesDefaultResponseType]
         public IActionResult GetNationalParks()
         {
-            var obj = _unitOfWork.NationalPark.GetNationalParks().FirstOrDefault();
+            var obj = _nationRepo.GetNationalParks().FirstOrDefault();
 
         
 

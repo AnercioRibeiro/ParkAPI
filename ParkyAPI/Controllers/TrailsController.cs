@@ -14,20 +14,20 @@ namespace ParkyAPI.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class TrailsController : ControllerBase
     {
-        //private readonly INationalParkRepository _nationalRepo;
-        public readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ITrailRepository _trailRepo;
+        private readonly IMapper _mapper;
+        //private readonly IUnitOfWork _unitOfWork;
 
-        //public NationalParksController(INationalParkRepository nationalRepo, IMapper mapper)
-        //{
-        //    _nationalRepo = nationalRepo;
-        //    _mapper = mapper;
-        //}
-        public TrailsController(IUnitOfWork unitOfWork, IMapper mapper)
+        public TrailsController(ITrailRepository trailRepo, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _trailRepo = trailRepo;
             _mapper = mapper;
         }
+        //public TrailsController(IUnitOfWork unitOfWork, IMapper mapper)
+        //{
+        //    _unitOfWork = unitOfWork;
+        //    _mapper = mapper;
+        //}
         /// <summary>
         /// Get list of trails.
         /// </summary>
@@ -54,7 +54,7 @@ namespace ParkyAPI.Controllers
 
         public IActionResult GetTrails()
         {
-            var trailList = _unitOfWork.Trail.GetTrails();
+            var trailList = _trailRepo.GetTrails();
 
             var trailDTO = new List<TrailDTO>();
 
@@ -78,7 +78,7 @@ namespace ParkyAPI.Controllers
         [ProducesDefaultResponseType]
         public IActionResult GetTrail(int trailId)
         {
-            var trailObj = _unitOfWork.Trail.GetTrail(trailId);
+            var trailObj = _trailRepo.GetTrail(trailId);
             if (trailObj == null)
             {
                 return NotFound();
@@ -104,7 +104,7 @@ namespace ParkyAPI.Controllers
         [ProducesDefaultResponseType]
         public IActionResult GetTrailInNationalPark(int nationalParkId)
         {
-            var trailObjList = _unitOfWork.Trail.GetTrailInNationalPark(nationalParkId);
+            var trailObjList = _trailRepo.GetTrailInNationalPark(nationalParkId);
             if (trailObjList == null)
             {
                 return NotFound();
@@ -131,7 +131,7 @@ namespace ParkyAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (_unitOfWork.Trail.TrailExists(trailCreateDTO.Name))
+            if (_trailRepo.TrailExists(trailCreateDTO.Name))
             {
                 ModelState.AddModelError("", "Trail already exists!");
                 return StatusCode(404, ModelState);
@@ -142,7 +142,7 @@ namespace ParkyAPI.Controllers
 
             var trailObj = _mapper.Map<Trail>(trailCreateDTO);
 
-            if (!_unitOfWork.Trail.CreateTrail(trailObj))
+            if (!_trailRepo.CreateTrail(trailObj))
             {
                 ModelState.AddModelError("", $"Something went wrong when trying to saving the record {trailObj.Name}");
                 return StatusCode(500, ModelState);
@@ -161,7 +161,7 @@ namespace ParkyAPI.Controllers
                 return BadRequest(ModelState);
             }
             var trailObj = _mapper.Map<Trail>(trailUpdateDTO);
-            if (!_unitOfWork.Trail.UpdateTrail(trailObj))
+            if (!_trailRepo.UpdateTrail(trailObj))
             {
                 ModelState.AddModelError("", $"Something went wrong when trying to updating the record {trailObj.Name}");
                 return StatusCode(500, ModelState);
@@ -176,12 +176,12 @@ namespace ParkyAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteTrail(int trailId)
         {
-            if (!_unitOfWork.Trail.TrailExists(trailId))
+            if (!_trailRepo.TrailExists(trailId))
             {
                 return NotFound();
             }
-            var trailObj = _unitOfWork.Trail.GetTrail(trailId);
-            if (!_unitOfWork.Trail.DeleteTrail(trailObj))
+            var trailObj = _trailRepo.GetTrail(trailId);
+            if (!_trailRepo.DeleteTrail(trailObj))
             {
                 ModelState.AddModelError("", $"Something went wrong when trying to delete the record {trailObj.Name}");
                 return StatusCode(500, ModelState);
